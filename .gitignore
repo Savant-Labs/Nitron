@@ -1,0 +1,10 @@
+.env
+*.csv
+*.code-workspace
+*.html
+*.bat
+
+__pycache__/
+
+app/logfiles/errors
+app/logfiles/events
