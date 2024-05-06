@@ -13,6 +13,10 @@ class LocationEngine():
 
     geocoder = Bing(api_key=SecretManager.BingMapsAPI)
 
+
+    savefile = os.path.abspath(__file__).replace('geocode.py', 'static/coordinates.csv')
+    
+    
     savefile = os.path.abspath(__file__).replace('geocode.py', 'static/coordinates.csv')
     
     @staticmethod
@@ -37,14 +41,12 @@ class LocationEngine():
         log.state('Applying Geocoding Software...')
         print()
 
-        tqdm.tqdm.pandas(desc='Fetching Coordinates...', colour='GREEN')
+        tqdm.tqdm.pandas(desc='Fetching Coordinates...', colour='GREEN', leave=True, position=0)
         table['Coordinates'] = table['Address'].progress_apply(cls.geocoder.geocode).apply(lambda x: (x.latitude, x.longitude))
         table[['Latitude', 'Longitude']] = table['Coordinates'].apply(lambda x: pd.Series(x))
         print()
 
         columns = ['Account_Number', 'Account_Name', 'Store_Status', 'Coordinates', 'Latitude', 'Longitude']
         geocoded = table.reindex(columns, axis=1)
-
-        geocoded.to_csv(cls.savefile)
 
         return geocoded

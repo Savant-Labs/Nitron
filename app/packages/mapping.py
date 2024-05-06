@@ -1,7 +1,6 @@
 import os
 import folium
 import random
-import webbrowser
 
 import pandas as pd
 import geopandas as gpd
@@ -37,7 +36,7 @@ class MappingEngine():
         geo = cls.convert(df)
 
         def colormap(df: pd.DataFrame):
-            clusters = df["Cluster Center"].unique()
+            clusters = df["Cluster Centre"].unique()
             colors = {cluster: '#' + ''.join([random.choice("ABCDEF0123456789") for _ in range(6)]) for cluster in clusters}
 
             return colors
@@ -52,12 +51,12 @@ class MappingEngine():
             tooltip = f'''
                 Store: {row["Account_Number"]} | {row["Account_Name"]}
                 Stores Within Range: {row["Neighbors"]}
-                Avg Travel Distance: {row["Total Density"]}
-                Territory: {row["Cluster Center"]}
-                Territory Size: {len(df[df["Cluster Center"] == row["Cluster Center"]])}
+                Avg Travel Distance: {row["Relative Density"]}
+                Territory: {row["Cluster Centre"]}
+                Territory Size: {len(df[df["Cluster Center"] == row["Cluster Centre"]])}
             '''
 
-            if (row["Latitude"], row["Longitude"]) == row["Cluster Center"]:
+            if (row["Latitude"], row["Longitude"]) == row["Cluster Centre"]:
                 background = "red"
             else:
                 background = "gray"
@@ -65,7 +64,7 @@ class MappingEngine():
             folium.Marker(
                 location = [row['Latitude'], row['Longitude']],
                 tooltip = tooltip,
-                icon = folium.Icon(icon='circle', prefix='fa', icon_color=colors[row['Cluster Center']], color=background)
+                icon = folium.Icon(icon='circle', prefix='fa', icon_color=colors[row['Cluster Centre']], color=background)
             ).add_to(map)
         
         centroids = geo["Cluster Center"].unique()
@@ -77,10 +76,6 @@ class MappingEngine():
             ).add_to(map)
 
         
-        log.state('Saving Cluster Map to HTML File...')
-        map.save(cls.mapfile)
-
-        log.state('Opening MapView...')
-        webbrowser.open(cls.mapfile)
+        return map
 
         
